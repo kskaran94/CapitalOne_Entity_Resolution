@@ -43,6 +43,12 @@ path = '../Data/Amazon-GoogleProducts/'
 data_1 = pd.read_csv(path + 'Amazon.csv', encoding = "latin")
 data_2 = pd.read_csv(path + 'GoogleProducts.csv', encoding = "latin")
 
+# Converting all the data to string
+for col in data_1.columns:
+	data_1[col] = data_1[col].apply(str)
+for col in data_2.columns:
+	data_2[col] = data_2[col].apply(str)
+
 # Defining k_type and columns to be combined into one type
 data_col = ["id", "title", "description", "manufacturer"]
 word = ["title", "name", "description", "manufacturer"]
