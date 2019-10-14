@@ -5,6 +5,37 @@ import networkx as nx
 import pandas as pd
 import matplotlib.pyplot as plt
 
+def CreateGraph(data_1, data_2, k_type, word):
+
+	# Creating graph and nodes from dataset
+
+	G = nx.Graph()
+	for k in range(len(k_type)):
+		if data_1.columns[k] in word:
+			G.add_nodes_from(data_1[data_1.columns[k]], t = "word")
+		else:
+			G.add_nodes_from(data_1[data_1.columns[k]], t = k_type[k])
+		if data_2.columns[k] in word:
+			G.add_nodes_from(data_2[data_2.columns[k]], t = "word")
+		else:
+			G.add_nodes_from(data_2[data_2.columns[k]], t = k_type[k])
+
+	# Creating edges
+
+	for i in range(len(data_1)):
+		for k in word:
+			if k in data_1.columns:
+				G.add_edge(data_1.id[i], data_1[k][i])
+
+	for i in range(len(data_2)):
+		for k in word:
+			if k in data_2.columns:
+				G.add_edge(data_2.id[i], data_2[k][i])
+
+	combined_k_type = [i for i in k_type if i not in word]
+	if len(word) > 0:
+		combined_k_type.append("word")
+	return G, combined_k_type
 
 # Importing data
 
@@ -12,23 +43,8 @@ path = '../Data/Amazon-GoogleProducts/'
 data_1 = pd.read_csv(path + 'Amazon.csv', encoding = "latin")
 data_2 = pd.read_csv(path + 'GoogleProducts.csv', encoding = "latin")
 
-# Creating graph and nodes from dataset
+# Defining k_type and columns to be combined into one type
+k_type = ["id", "title", "description", "manufacturer"]
+word = ["title", "name", "description", "manufacturer"]
 
-k_type = ["id", "title", "description", "manufacturer", "price"]
-G = nx.Graph()
-
-for k in range(len(k_type)):
-    G.add_nodes_from(data_1[data_1.columns[k]], t = k_type[k])
-    G.add_nodes_from(data_2[data_2.columns[k]], t = k_type[k])
-
-# Creating edges
-
-for i in range(len(data_1)):
-    G.add_edge(data_1.manufacturer[i], data_1.id[i])
-    G.add_edge(data_1.id[i], data_1.price[i])
-    G.add_edge(data_1.id[i], data_1.title[i])
-
-for i in range(len(data_2)):
-    G.add_edge(data_2.manufacturer[i], data_2.id[i])
-    G.add_edge(data_2.id[i], data_2.price[i])
-    G.add_edge(data_2.id[i], data_2.name[i])
+G, combined_k_type = CreateGraph(data_1, data_2, k_type, word)
