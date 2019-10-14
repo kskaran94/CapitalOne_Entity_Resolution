@@ -5,36 +5,36 @@ import networkx as nx
 import pandas as pd
 import matplotlib.pyplot as plt
 
-def CreateGraph(data_1, data_2, data_col, combined_nodes):
+def CreateGraph(data_1, data_2, data_col, combined_col):
 
 	# Creating graph and nodes from dataset
 
 	G = nx.Graph()
 	for k in range(len(data_col)):
 		if data_1.columns[k] in word:
-			G.add_nodes_from(data_1[data_1.columns[k]], t = "combined_nodes")
+			G.add_nodes_from(data_1[data_1.columns[k]], t = "combined_col")
 		else:
 			G.add_nodes_from(data_1[data_1.columns[k]], t = data_col[k])
 		if data_2.columns[k] in word:
-			G.add_nodes_from(data_2[data_2.columns[k]], t = "combined_nodes")
+			G.add_nodes_from(data_2[data_2.columns[k]], t = "combined_col")
 		else:
 			G.add_nodes_from(data_2[data_2.columns[k]], t = data_col[k])
 
 	# Creating edges
 
 	for i in range(len(data_1)):
-		for k in combined_nodes:
+		for k in combined_col:
 			if k in data_1.columns:
 				G.add_edge(data_1.id[i], data_1[k][i])
 
 	for i in range(len(data_2)):
-		for k in combined_nodes:
+		for k in combined_col:
 			if k in data_2.columns:
 				G.add_edge(data_2.id[i], data_2[k][i])
 
-	k_type = [i for i in data_col if i not in combined_nodes]
+	k_type = [i for i in data_col if i not in combined_col]
 	if len(word) > 0:
-		k_type.append("combined_nodes")
+		k_type.append("combined_col")
 	return G, k_type
 
 # Importing data
