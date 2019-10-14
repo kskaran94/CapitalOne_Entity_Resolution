@@ -2,6 +2,7 @@ import networkx as nx
 import numpy as np
 from fuzzywuzzy import fuzz
 
+# This is the Common Neighbor similarity mentioned in equation 6
 def CreateCommonNeighborSim(G, k_type):
 	CN_sim = []
 	for i in k_type:
@@ -18,6 +19,7 @@ def CreateCommonNeighborSim(G, k_type):
 		CN_sim.append(sim_t)
 	return CN_sim
 
+# This is a type of string similarity - Do not run this, very high execution time (has to be optimized)
 def CreateLevenshteinSim(G, k_type):
 	L_sim = []
 	for i in k_type:
