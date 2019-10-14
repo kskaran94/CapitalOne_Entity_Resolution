@@ -47,4 +47,4 @@ data_2 = pd.read_csv(path + 'GoogleProducts.csv', encoding = "latin")
 data_col = ["id", "title", "description", "manufacturer"]
 word = ["title", "name", "description", "manufacturer"]
 
-G, k_type = CreateGraph(data_1, data_2, k_type, word)
+G, k_type = CreateGraph(data_1, data_2, data_col, word)
