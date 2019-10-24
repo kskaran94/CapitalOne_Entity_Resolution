@@ -5,10 +5,10 @@ from fuzzywuzzy import fuzz
 # This is the Common Neighbor similarity mentioned in equation 6
 def CreateCommonNeighborSim(G, k_type):
 	CN_sim = []
-	V_t = []
+	V = []
 	for i in k_type:
 		nodes = [x for x,y in G.nodes(data=True) if y['t'] == i]
-		V_t.append(nodes)
+		V.append(nodes)
 		n_t = len(nodes)
 		sim_t = np.zeros((n_t, n_t))
 		for x in range(n_t):
@@ -19,15 +19,15 @@ def CreateCommonNeighborSim(G, k_type):
 				sim_t[x][y] = sim_x_y
 				sim_t[y][x] = sim_x_y
 		CN_sim.append(sim_t)
-	return CN_sim, V_t
+	return CN_sim, V
 
 # This is a type of string similarity - Do not run this, very high execution time (has to be optimized)
 def CreateLevenshteinSim(G, k_type):
 	L_sim = []
-	V_t = []
+	V = []
 	for i in k_type:
 		nodes = [x for x,y in G.nodes(data=True) if y['t'] == i]
-		V_t.append(nodes)
+		V.append(nodes)
 		n_t = len(nodes)
 		sim_t = np.zeros((n_t, n_t))
 		for x in range(n_t):
@@ -36,4 +36,4 @@ def CreateLevenshteinSim(G, k_type):
 				sim_t[x][y] = sim_x_y
 				sim_t[y][x] = sim_x_y
 		L_sim.append(sim_t)
-	return L_sim, V_t
+	return L_sim, V
