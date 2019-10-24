@@ -7,8 +7,13 @@ def CreateCommonNeighborSim(G, k_type):
 	CN_sim = []
 	V = []
 	for i in k_type:
+		temp = {'order':{}, 'name':{}, 'position':{}}
 		nodes = [x for x,y in G.nodes(data=True) if y['t'] == i]
-		V.append(nodes)
+		temp['order'] = nodes
+		for x in range(len(nodes)):
+			temp['name'][x] = nodes[x]
+			temp['position'][nodes[x]] = x
+		V.append(temp)
 		n_t = len(nodes)
 		sim_t = np.zeros((n_t, n_t))
 		for x in range(n_t):
