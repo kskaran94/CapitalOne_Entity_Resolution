@@ -20,12 +20,12 @@ def CreateSummaryGraph(G, C, V, k_type):
 			C_t = C[i]
 			merge_nodes = np.argwhere(C_t[:,p] == 1)
 			merge_nodes = merge_nodes.reshape((merge_nodes.shape[0],))
-			S_t['order'].append(V[i][merge_nodes[0]])
-			S_t['name'][merge_nodes[0]] = V[i][merge_nodes[0]]
-			S_t['position'][V[i][merge_nodes[0]]] = merge_nodes[0]
+			S_t['order'].append(V[i]['order'][merge_nodes[0]])
+			S_t['name'][merge_nodes[0]] = V[i]['order'][merge_nodes[0]]
+			S_t['position'][V[i]['order'][merge_nodes[0]]] = merge_nodes[0]
 			S_t[merge_nodes[0]] = merge_nodes
 			for j in range(1,len(merge_nodes)):
-				SG = nx.contracted_nodes(SG, V[i][merge_nodes[0]], V[i][merge_nodes[j]])
+				SG = nx.contracted_nodes(SG, V[i]['order'][merge_nodes[0]], V[i]['order'][merge_nodes[j]])
 		S.append(S_t)
 	L = {}
 	for i in range(len(S)):
