@@ -28,7 +28,7 @@ def CreateCommonNeighborSim(G, k_type):
 	return CN_sim, V
 
 
-def CreateCommonNeighborSimJaccard(G, k_type):
+def CreateJaccardSim(G, k_type):
     CN_sim = []
     V = []
     for i in k_type:
