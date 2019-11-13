@@ -42,12 +42,8 @@ def CreateCommonNeighborSim(G, k_type):
 	return CN_sim, V
 
 
-<<<<<<< HEAD
-def CreateJaccardSim(G, k_type):
-=======
 # Implementation of Jaccard Similarity - (only similarity function changed)
-def CreateCommonNeighborSimJaccard(G, k_type):
->>>>>>> 7fb36805bfd9d45f6560609de90cd98df8bf1156
+def CreateJaccardSim(G, k_type):
     CN_sim = []
     V = []
     for i in k_type:
