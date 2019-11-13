@@ -9,27 +9,26 @@ def ComputeTheta(C, k_type):
 
 def ComputeObjectiveFunction(S, C, L, CN_sim):
 	#k_type = 2
+	first_term, second_term = 0, 0
 	for type_ in range(k_type):
 		sim_t = CN_sim[type_]
 		C_t = C[type_]
 		n_t = len(sim_t)
 
-		first_term = 0
 		for i in range(n_t):
 			for j in range(i):
-				first_term += sim_t[i][j]*(C_t[i] - C_t[j])**2 ### doubt
+				first_term += sim_t[i][j]*np.sum((C_t[i] - C_t[j])**2)
 
-		second_term = 0
-		for t in range():
-			for t_dash in range():
-				#create subgraph G_t_t_dash
-				temp1 = np.matmul(C[t], L[t][t_dash])
-				temp2 = np.matmul(temp1, C[t_dash].transpose())
+	for t in range():
+		for t_dash in range():
+			#create subgraph G_t_t_dash
+			temp1 = np.matmul(C[t], L[t][t_dash])
+			temp2 = np.matmul(temp1, C[t_dash].transpose())
 
-				second_term += (G_t_t_dash - temp2)**2 ### doubt
+			second_term += np.sum((G_t_t_dash - temp2)**2)
 
-		objective = first_term + second_term
-		return objective
+	objective = first_term + second_term
+	return objective
 	
 
 def GetOptimalSuperNode(G, SG, S, C):

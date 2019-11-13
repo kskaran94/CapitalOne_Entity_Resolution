@@ -2,11 +2,15 @@ import networkx as nx
 import numpy as np
 import copy
 
+# Initial value of C : random initialization
+# p is the number of supernodes for every k-type (assumption)
 def InitializeMapping(sim, p):
 	C = []
 	for i in range(len(sim)):
+		# C_t is a mapping from all the nodes of t-type to its t-type supernode
 		C_t = np.zeros((sim[i].shape[0], p[i]))
 		for j in range(sim[i].shape[0]):
+			# Randomly maps the t-type node to a t-type supernode
 			C_t[j, np.random.randint(low = 0, high = p[i])] = 1
 			C.append(C_t)
 	return C
