@@ -3,6 +3,7 @@
 
 import networkx as nx
 import pandas as pd
+import matplotlib.pyplot as plt
 
 def createGraph(data_1, data_2, data_col, combined_col):
 
@@ -20,7 +21,6 @@ def createGraph(data_1, data_2, data_col, combined_col):
             G.add_nodes_from(data_2[data_2.columns[k]], t = data_col[k])
 
     # Creating edges
-
     for i in range(len(data_1)):
         for k in combined_col:
             if k in data_1.columns:
@@ -44,13 +44,14 @@ data_2 = pd.read_csv('GoogleProducts.csv', encoding = "latin")
 
 # Converting all the data to string
 for col in data_1.columns:
-	data_1[col] = data_1[col].apply(str)
+    data_1[col] = data_1[col].apply(str)
 for col in data_2.columns:
-	data_2[col] = data_2[col].apply(str)
+    data_2[col] = data_2[col].apply(str)
 
 # Defining k_type and columns to be combined into one type
-data_col = ["id", "title", "description", "manufacturer"]
-word = ["title", "name", "description", "manufacturer"]
+data_col = ["id", "title", "description"]
+word = ["title", "name", "description"]
 
-# Function call
-#G, k_type = createGraph(data_1, data_2, data_col, word)
+G, k_type = createGraph(data_1, data_2, data_col, word)
+
+G.remove_node("nan")
