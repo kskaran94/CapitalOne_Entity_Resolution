@@ -3,6 +3,7 @@ import numpy as np
 import copy
 import math
 from collections import defaultdict
+from collections import OrderedDict
 
 def calcSuperNodes(V):
     number_super_nodes =[]
@@ -46,18 +47,20 @@ def createSummaryGraph(G, C, V, k_type):
     return SG, S
 
 
+
 def createTheSuperLinkMatrix(S):
-    L = []
+    L = OrderedDict()
     for i in range(len(S)):
         S_t = S[i]
         for j in range(i+1,len(S)):
             S_t_dash = S[j]
-            L_t_t_dash = {'order_1':list(S_t['position'].keys()),'order_2':list(S_t_dash['position'].keys()),
+            L_t_t_dash = {i:list(S_t['position'].keys()),
+                          j:list(S_t_dash['position'].keys()),
                           'adj_matrix':np.zeros((len(S_t['super_nodes']), len(S_t_dash['super_nodes'])))}
             for k in range(0, len(S_t['super_nodes'])):
                 L_t_t_dash['adj_matrix'][k]=np.random.dirichlet(np.ones(len(S_t_dash['super_nodes'])),size=1)[0]
             
-            L.append(L_t_t_dash)
+            L[(i,j)] = L_t_t_dash
             
     return L
 
