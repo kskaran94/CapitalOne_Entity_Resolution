@@ -52,11 +52,13 @@ def getOptimalSuperNode(G, SG, S, C, L, V, CN_sim):
         #VC.append(vertex_cluster_contribution_sum)
         index = np.argmin(vertex_cluster_contribution_sum)
         name_node = S[i]['name'][index]
-        SG.remove_node(name_node)
         C[i] = np.delete(C[i],index,1)
         L = removeSuperNodeFromL(L,i,name_node,index)
     
-    return SG, C, L
+    start_time = time.time()
+    SG, S = createSummaryGraph(G, C, V, k_type)
+    print("Time taken to update the summary graph:", (time.time()-start_time)/60)
+    return SG, S, C, L
 # def getOptimalSuperNode(G, SG, S, C, L, V, CN_sim):
 #     for i in range(0,len(C)): #i denotes the k-type
 #         theta, vertex_cluster_contribution_sum = computeTheta(C[i])
