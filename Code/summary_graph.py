@@ -23,7 +23,7 @@ class CMappings:
 
 class SummaryGraph:
     def __init__(self):
-
+        pass
 
 
 class SuperLinks:
