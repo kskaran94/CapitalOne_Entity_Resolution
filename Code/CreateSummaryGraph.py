@@ -4,6 +4,7 @@ import copy
 import math
 from collections import defaultdict
 from collections import OrderedDict
+from sklearn.cluster import AgglomerativeClustering
 
 def calcSuperNodes(V):
     number_super_nodes =[]
@@ -23,6 +24,20 @@ def initializeMapping(sim, p):
             # Randomly maps the t-type node to a t-type supernode
             C_t[j]=np.random.dirichlet(np.ones(p[i]),size=1)[0]
             #C_t[j, np.random.randint(low = 0, high = p[i])] = 1
+        C.append(C_t)
+    return C
+
+def initializeMappingHierarchical(sim, p):
+    C = []
+    for i in range(len(sim)):
+        # C_t is a mapping from all the nodes of t-type to its t-type supernode
+        C_t = np.zeros((sim[i].shape[0], p[i]))
+        model = AgglomerativeClustering(affinity = 'precomputed', n_clusters = 50, linkage = 'average')
+        cluster_assignment = model.fit_predict(sim[i])
+        for j in range(len(cluster_assignment)):
+            prob = np.random.uniform(0.7,0.95)
+            C_t[j, :] = (1 - prob)/(C_t.shape[1] - 1)
+            C_t[j, cluster_assignment[j]] = prob
         C.append(C_t)
     return C
 
