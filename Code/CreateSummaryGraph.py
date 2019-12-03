@@ -32,7 +32,7 @@ def initializeMappingHierarchical(sim, p):
     for i in range(len(sim)):
         # C_t is a mapping from all the nodes of t-type to its t-type supernode
         C_t = np.zeros((sim[i].shape[0], p[i]))
-        model = AgglomerativeClustering(affinity = 'precomputed', n_clusters = 50, linkage = 'average')
+        model = AgglomerativeClustering(affinity = 'precomputed', n_clusters = p[i], linkage = 'average')
         cluster_assignment = model.fit_predict(sim[i])
         for j in range(len(cluster_assignment)):
             prob = np.random.uniform(0.7,0.95)
