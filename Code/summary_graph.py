@@ -9,8 +9,10 @@ from collections import OrderedDict
 class CMappings:
     # Initial value of C : random initialization
     # p is the number of supernodes for every k-type (assumption)
-    def __init__(self, vertices, number_super_nodes):
+    def __init__(self):
         self.C = []
+
+    def initialize_mapping(self, vertices, number_super_nodes):
         for k_type, vertex_collection in enumerate(vertices):
             # C_t is a mapping from all the nodes of t-type to its t-type supernode
             C_t = np.zeros((vertex_collection.count, number_super_nodes[k_type]))
