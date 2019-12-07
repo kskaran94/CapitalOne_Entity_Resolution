@@ -40,7 +40,7 @@ google_ids = set(google_products.keys())
 
 matched_id_to_keep = []
 all_matches = []
-#create the matching ground truth for the subset
+
 for am_id, g_id in matched_products:
 	all_matches.append((am_id, g_id))
 
@@ -52,7 +52,7 @@ print("Subset of matching: ", len(matched_id_to_keep))
 
 amazon_id_used, google_id_used = set(), set()
 
-#create new csv
+#create the matching ground truth for the subset
 with open('matched_products_subset.csv', mode='w') as matched_file:
     matched_writer = csv.writer(matched_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
     matched_writer.writerow(["Amazon_ID", "Google_ID"])
@@ -61,14 +61,14 @@ with open('matched_products_subset.csv', mode='w') as matched_file:
     	amazon_id_used.add(am_id)
     	google_id_used.add(g_id)
 
-
+#create new csv
 with open('products_subset.csv', mode='w') as product_file:
 	product_writer = csv.writer(product_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 	#add header for csv file
 	product_writer.writerow(["ID", "title", "description", "manufacturer", "price"])
 	
-	amazon_id_to_keep = sample(amazon_ids - amazon_id_used, NON_MATCH_COUNT)
-	google_id_to_keep = sample(google_ids - google_id_used, NON_MATCH_COUNT)
+	amazon_id_to_keep = sample(amazon_ids - amazon_id_used, NON_MATCH_COUNT) + list(amazon_id_used)
+	google_id_to_keep = sample(google_ids - google_id_used, NON_MATCH_COUNT) + list(google_id_used)
 
 	print("IDs to keep: ", len(amazon_id_to_keep), len(google_id_to_keep))
 
