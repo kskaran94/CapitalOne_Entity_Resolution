@@ -32,27 +32,38 @@ class CMappings:
         
         return number_super_nodes
 
-    def update_mapping():
-        def updateC(G, V, C, L, sim, D):
-        for i in range(len(C)):
-            C_t = C[i]
-            D_t = D[i]
+    def update_mapping(graph, c_mapping, superlinks, similarity_matrix, diagonal_matrix):
+        updated_c_mapping = CMappings()
+
+        for type_i in range(graph.types):
+            C_t = c_mapping.C[type_i]
+            D_t = diagonal_matrix[type_i]
             sum1 = np.zeros(C_t.shape)
             sum2 = np.zeros(C_t.shape)
-            for j in range(i+1, len(C)):
-                C_t_dash = C[j]
-                G_t_t_dash = Gtt[(i,j)]
-                L_t_t_dash = L[(i,j)]['adj_matrix']
+
+            for type_j in range(type_i+1, graph.types):
+                C_t_dash = c_mapping.C[type_j]
+                G_t_t_dash = graph.Gtt[(type_i, type_j)]
+                L_t_t_dash = superlinks.L[(type_i, type_j)]['adj_matrix']
+
                 temp1 = np.dot(C_t_dash, L_t_t_dash.transpose())
                 sum1 += np.dot(G_t_t_dash, temp1)
                 sum2 += np.dot(C_t, np.dot(L_t_t_dash, np.dot(C_t_dash.transpose(), temp1)))
-            sum1 += np.matmul(sim[i], C_t)
+            sum1 += np.matmul(similarity_matrix[type_i], C_t)
             sum2 += np.matmul(D_t, C_t)
-            if i >=1:
-                C[i] = np.multiply(C_t, np.sqrt(np.divide(sum1, sum2)))
-            for j in range(0,len(C[i])):
-                C[i][j] = C[i][j]/sum(C[i][j])
-        return C
+
+            if type_i >= 1:
+                new_c = np.multiply(C_t, np.sqrt(np.divide(sum1, sum2)))
+            else:
+                new_c = copy.deepcopy(C_t)
+
+            #normalizing each row
+            row_sums = new_c.sum(axis=1)
+            normalized_c = new_c/row_sums[:, np.newaxis]
+            
+            updated_c_mapping.C.append(normalized_c)
+
+        return updated_c_mapping
 
 
 class SuperNode:
@@ -77,23 +88,28 @@ class SuperLink:
                 
                 self.L[(i,j)] = L_t_t_dash
         
+    def update_links(graph, c_mapping, superlinks):
+        updated_superlinks = SuperLink()
+        for type_i in range(graph.types):
+            C_t = c_mapping.C[type_i]
 
+            for type_j in range(type_i+1, graph.types):
+                L_t_t_dash = superlinks.L[(type_i, type_j)]['adj_matrix']
+                C_t_dash = c_mapping.C[type_j]
+                G_t_t_dash = graph.Gtt[(type_i, type_j)]
 
-    def update_links():
-        def updateL(G, V, C, L):
-    for i in range(len(C)):
-        C_t = C[i]
-        for j in range(i+1, len(C)):
-            L_t_t_dash = L[(i,j)]['adj_matrix']
-            C_t_dash = C[j]
-            G_t_t_dash = Gtt[(i,j)]
-            temp1 = np.dot(C_t.transpose(), np.dot(G_t_t_dash, C_t_dash))
-            temp2 = np.dot(L_t_t_dash, np.dot(C_t_dash.transpose(), C_t_dash))
-            temp3 = np.dot(C_t.transpose(), np.dot(C_t, temp2))
-            L[(i,j)]['adj_matrix'] = np.multiply(L_t_t_dash, np.sqrt(np.divide(temp1, temp3)))
-            for k in range(0,len(L[(i,j)]['adj_matrix'])):
-                L[(i,j)]['adj_matrix'][k] = L[(i,j)]['adj_matrix'][k]/sum(L[(i,j)]['adj_matrix'][k])
-    return L
+                temp1 = np.dot(C_t.transpose(), np.dot(G_t_t_dash, C_t_dash)) #numerator in the update equation
+                temp2 = np.dot(L_t_t_dash, np.dot(C_t_dash.transpose(), C_t_dash))
+                temp3 = np.dot(C_t.transpose(), np.dot(C_t, temp2)) #denominator in the update equation
+                new_l = np.multiply(L_t_t_dash, np.sqrt(np.divide(temp1, temp3)))
+
+                #normalizing each row
+                row_sums = new_l.sum(axis=1)
+                normalized_l = new_l/row_sums[:, np.newaxis]
+                updated_superlinks.L[(type_i, type_j)]['adj_matrix'] = normalized_l
+
+        return updated_superlinks
+    
 
 class SummaryGraph:
     def __init__(self):
