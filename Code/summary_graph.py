@@ -86,7 +86,7 @@ class SuperLink:
                 for k in range(0, type_i_count):
                     L_t_t_dash['adj_matrix'][k]=np.random.dirichlet(np.ones(type_j_count), size=1)[0]
                 
-                self.L[(i,j)] = L_t_t_dash
+                self.L[(type_i, type_j)] = L_t_t_dash
         
     def update_links(graph, c_mapping, superlinks):
         updated_superlinks = SuperLink()
