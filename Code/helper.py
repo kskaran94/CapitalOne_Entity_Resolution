@@ -1,16 +1,27 @@
-# for each k-type vertex, initial number of super nodes
-# is set to the square root of count of vertices in that type (assumption)
-def calculate_initial_super_nodes(V):
-    number_super_nodes =[]
-    for v in V:
-        number_super_nodes.append(int(math.sqrt(len(v['name']))))
-    
-    return number_super_nodes
+import distance
+import networkx as nx
+import numpy as np
+import time
 
-def calculate_diagonal_matrix(sim):
+
+# Implementation of Jaccard Similarity
+def createJaccardSim(graph):
+    similarity_matrix = []
+    for ith_type_vertices in graph.vertices:
+        vertices_count = ith_type_vertices.count
+        nodes = ith_type_vertices.nodes
+        sim_matrix = np.zeros((vertices_count, vertices_count))
+        for v1 in range(n_t):
+            for v2 in range(n_t):
+                sim_matrix[x][y] = 1 - distance.jaccard(nodes[x], nodes[y])
+
+        similarity_matrix.append(sim_matrix)
+    return similarity_matrix
+
+def calculate_diagonal_matrix(similarity_matrix):
     D=[]
-    for i in range(0,len(sim)):
-        D.append(np.diag(np.sum(sim[i],axis=1)))
+    for index, type_i_sim_matrix in enumerate(similarity_matrix):
+        D.append(np.diag(np.sum(type_i_sim_matrix, axis=1)))
     
     return D
 
