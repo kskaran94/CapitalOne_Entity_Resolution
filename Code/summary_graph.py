@@ -30,17 +30,17 @@ class CMappings:
 
         return number_super_nodes
 
-    def update_mapping(graph, c_mapping, superlinks, similarity_matrix, diagonal_matrix):
+    def update_mapping(self, graph, superlinks, similarity_matrix, diagonal_matrix):
         updated_c_mapping = CMappings()
 
         for type_i in range(graph.types):
-            C_t = c_mapping.C[type_i]
+            C_t = self.C[type_i]
             D_t = diagonal_matrix[type_i]
             sum1 = np.zeros(C_t.shape)
             sum2 = np.zeros(C_t.shape)
 
             for type_j in range(type_i+1, graph.types):
-                C_t_dash = c_mapping.C[type_j]
+                C_t_dash = self.C[type_j]
                 G_t_t_dash = graph.Gtt[(type_i, type_j)]
                 L_t_t_dash = superlinks.L[(type_i, type_j)]['adj_matrix']
 
@@ -51,7 +51,6 @@ class CMappings:
             sum2 += np.matmul(D_t, C_t)
 
             new_c = np.multiply(C_t, np.sqrt(np.divide(sum1, sum2)))
-
 
             # normalizing each row
             row_sums = new_c.sum(axis=1)
@@ -85,13 +84,14 @@ class SuperLink:
 
                 self.L[(type_i, type_j)] = L_t_t_dash
 
-    def update_links(graph, c_mapping, superlinks):
+    def update_links(self, graph, c_mapping):
         updated_superlinks = SuperLink()
         for type_i in range(graph.types):
             C_t = c_mapping.C[type_i]
 
             for type_j in range(type_i+1, graph.types):
-                L_t_t_dash = superlinks.L[(type_i, type_j)]['adj_matrix']
+                updated_superlinks.L[(type_i, type_j)] = {}
+                L_t_t_dash = self.L[(type_i, type_j)]['adj_matrix']
                 C_t_dash = c_mapping.C[type_j]
                 G_t_t_dash = graph.Gtt[(type_i, type_j)]
 
