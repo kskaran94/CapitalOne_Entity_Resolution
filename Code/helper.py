@@ -1,6 +1,6 @@
 import distance
 import numpy as np
-
+from scipy.spatial.distance import pdist, squareform
 
 # Implementation of Jaccard Similarity
 def create_jaccard_sim(graph):
@@ -92,3 +92,54 @@ def get_difference_l(l_new, l_old):
         change_in_l += np.sum(abs(l_new.L[tt_dash]['adj_matrix'] - l_old.L[tt_dash]['adj_matrix']))
 
     return change_in_l
+
+
+def compute_sim(cluster_a, cluster_b):
+    len_a = len(cluster_a)
+    len_b = len(cluster_b)
+    
+    sim_matrix = np.zeros((len_a, len_b))
+    for index_a, word_a in enumerate(cluster_a):
+        for index_b, word_b in enumerate(cluster_b):
+            sim_matrix[index_a][index_b] = distance.jaccard(word_a, word_b)
+    return sim_matrix
+
+
+def calculate_silhouette_coeff(summary_graph):
+    plot_silhouette_val = []
+    sim_store = {}
+    # for type 2 nodes
+    supernode_vertex_map = summary_graph.S[1].nodes_to_cluster
+    clusters = list(supernode_vertex_map.values()) # list of list; each inner list is a cluster
+    print("Number of clusters: ", len(clusters))
+    for index_a, cluster_a in enumerate(clusters):
+        divide_cluster_a_count = max(2,len(cluster_a))
+        cluster_a_count = len(cluster_a)
+        transformed_cluster = np.array(cluster_a).reshape(-1,1)
+        distance_matrix = pdist(transformed_cluster,lambda x,y: distance.jaccard(x[0],y[0]))
+        # get square matrix
+        sim_matrix = squareform(distance_matrix)
+        ai = (np.sum(sim_matrix, axis=1)/(divide_cluster_a_count-1))[:, np.newaxis]
+
+        #create an empty numpy matrix
+        acc = np.empty((cluster_a_count,0))
+        for index_b, cluster_b in enumerate(clusters):
+            cluster_b_count = len(cluster_b)
+            if index_b != index_a:
+                if (index_a, index_b) in sim_store:
+                    print("Found in store: ", index_a, index_b)
+                    sim_matrix = sim_store[(index_a, index_b)]
+                    del sim_store[(index_a, index_b)]
+                else:
+                    sim_matrix = compute_sim(cluster_a, cluster_b)
+                    sim_store[(index_b, index_a)] = sim_matrix.T
+                    
+                y1 = np.mean(sim_matrix, axis=1)[:, np.newaxis]
+                acc = np.hstack((acc, y1))
+                sim_store[(index_b, index_a)] = sim_matrix.T
+
+        bi = np.min(acc, axis=1)[:, np.newaxis]
+        silhouette_val = (bi - ai)/(np.maximum(ai,bi)+0.0001)
+        plot_silhouette_val.append(np.squeeze(silhouette_val.T))
+
+    return plot_silhouette_val
