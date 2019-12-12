@@ -1,6 +1,6 @@
 from graph import Graph
 from helper import create_jaccard_sim, calculate_diagonal_matrix, get_optimal_supernode, get_difference_c,\
-get_difference_l, compute_objective_function
+get_difference_l, compute_objective_function, calculate_silhouette_coeff
 import os
 from summary_graph import CMappings, SummaryGraph, SuperLink
 
@@ -23,7 +23,8 @@ summary_graph.create_summary_graph(graph, c_mapping)
 superlinks = SuperLink()
 superlinks.create_super_links(summary_graph)
 
-for i in range(3):
+for i in range(7):
+    print("Nodes before optimal search: ", c_mapping.C[0].shape, c_mapping.C[1].shape, superlinks.L[(0,1)]['adj_matrix'].shape)
     # Step 2: Call Search(G,S(G))
     get_optimal_supernode(graph, c_mapping, superlinks)
 
@@ -48,11 +49,32 @@ for i in range(3):
         C_values.append(c_mapping)
         L_values.append(superlinks)
 
-    index = change_C.index(min(change_C))
-    C = C_values[index]
-    index = change_L.index(min(change_L))
-    L = L_values[index]
+    # index = change_C.index(min(change_C))
+    # C = C_values[index]
+    # index = change_L.index(min(change_L))
+    # L = L_values[index]
 
     # Calculate the new objective function
-    final_objective = compute_objective_function(graph, c_mapping, superlinks, similarity_matrix)
-    print(final_objective)
+    # final_objective = compute_objective_function(graph, c_mapping, superlinks, similarity_matrix)
+    # print(final_objective)
+    print("Nodes after optimal search: ", c_mapping.C[0].shape, c_mapping.C[1].shape, superlinks.L[(0,1)]['adj_matrix'].shape)
+    # Construct the new summary graph S(G)
+    indices_to_keep = []
+    t = list(set(np.argmax(c_mapping.C[0], axis=1)))
+    indices_to_keep.append(t)
+    c_mapping.C[0] = c_mapping.C[0][:,t]
+    t = list(set(np.argmax(c_mapping.C[1], axis=1)))
+    indices_to_keep.append(t)
+    c_mapping.C[1] = c_mapping.C[1][:,t]
+
+    #update the Ltt
+    temp_L = copy.deepcopy(superlinks.L[(0,1)]['adj_matrix'])
+    temp_L = temp_L[indices_to_keep[0],:]
+    temp_L = temp_L[:,indices_to_keep[1]]
+    
+    superlinks.L[(0,1)]['adj_matrix'] = temp_L
+    print("Nodes after C and L update: ", c_mapping.C[0].shape, c_mapping.C[1].shape, superlinks.L[(0,1)]['adj_matrix'].shape)
+
+final_summary_graph = SummaryGraph()
+final_summary_graph.create_summary_graph(graph, c_mapping)
+plot_silhouette_val = calculate_silhouette_coeff(final_summary_graph)
