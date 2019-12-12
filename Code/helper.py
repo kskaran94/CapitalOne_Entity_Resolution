@@ -10,8 +10,10 @@ def create_jaccard_sim(graph):
         nodes = ith_type_vertices.nodes
         sim_matrix = np.zeros((vertices_count, vertices_count))
         for v1 in range(vertices_count):
-            for v2 in range(vertices_count):
-                sim_matrix[v1][v2] = 1 - distance.jaccard(nodes[v1], nodes[v2])
+            for v2 in range(v1+1):
+                similarity_val = 1 - distance.jaccard(nodes[v1], nodes[v2])
+                sim_matrix[v1][v2] = similarity_val
+                sim_matrix[v2][v1] = similarity_val
         similarity_matrix.append(sim_matrix)
     return similarity_matrix
 
